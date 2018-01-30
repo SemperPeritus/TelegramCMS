@@ -2,7 +2,7 @@ import telegram
 from django import forms
 from django.contrib import admin
 
-from bots.models import Bot
+from bots.models import Bot, Channel
 
 
 class BotAdminForm(forms.ModelForm):
@@ -30,5 +30,39 @@ class BotAdmin(admin.ModelAdmin):
         obj.id = bot_info['id']
         obj.name = bot_info['first_name']
         obj.username = bot_info['username']
+
+        super().save_model(request, obj, form, change)
+
+
+class ChannelAdminForm(forms.ModelForm):
+    def clean(self):
+        try:
+            bot_model = self.cleaned_data.get('bot')
+            token = bot_model.token
+            bot = telegram.Bot(token=token)
+            print(bot.get_me())
+            print(self.cleaned_data.get('username'))
+            bot.get_chat(self.cleaned_data.get('username'))
+        except telegram.TelegramError:
+            raise forms.ValidationError("Can't connect to the channel using the bot")
+
+        return self.cleaned_data
+
+
+@admin.register(Channel)
+class ChannelAdmin(admin.ModelAdmin):
+    list_display = ('title', 'username', 'bot')
+    fields = ('username', 'bot')
+    form = ChannelAdminForm
+
+    def save_model(self, request, obj, form, change):
+        token = obj.bot.token
+        bot = telegram.Bot(token=token)
+
+        channel = bot.get_chat(obj.username)
+
+        obj.id = channel['id']
+        obj.type = channel['type']
+        obj.title = channel['title']
 
         super().save_model(request, obj, form, change)
