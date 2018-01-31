@@ -1,4 +1,6 @@
+import os
 from django.db import models
+from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
 from TelegramCMS import settings
@@ -34,6 +36,32 @@ class Message(models.Model):
         return self.text
 
     def image_tag(self):
-        return mark_safe('<img src="/static/img/{0}" width="100" />'.format(self.image))
+        if self.image:
+            return mark_safe('<img src="/static/img/{0}" width="100" />'.format(self.image))
 
     image_tag.short_description = "Image preview"
+
+
+# noinspection PyUnusedLocal
+@receiver(models.signals.post_delete, sender=Message)
+def auto_delete_image_on_delete(sender, instance, **kwargs):
+    if instance.image:
+        if os.path.isfile(instance.image.path):
+            os.remove(instance.image.path)
+
+
+# noinspection PyUnusedLocal
+@receiver(models.signals.pre_save, sender=Message)
+def auto_delete_image_on_change(sender, instance, **kwargs):
+    if not instance.pk:
+        return False
+
+    try:
+        old_image = Message.objects.get(pk=instance.pk).image
+    except Message.DoesNotExist:
+        return False
+
+    new_image = instance.image
+    if not old_image == new_image:
+        if os.path.isfile(old_image.path):
+            os.remove(old_image.path)
