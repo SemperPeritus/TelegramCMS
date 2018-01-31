@@ -70,6 +70,6 @@ class ChannelAdmin(admin.ModelAdmin):
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('text', 'channel', 'image_tag')
-    fields = ('channel', 'text', 'image', 'image_tag')
+    list_display = ('text', 'channel', 'image_tag', 'send_time')
+    fields = ('channel', 'text', 'image', 'image_tag', 'send_time')
     readonly_fields = ('image_tag',)

@@ -29,8 +29,9 @@ class Channel(models.Model):
 
 class Message(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
-    text = models.CharField(max_length=4096)
-    image = models.ImageField(settings.MEDIA_ROOT)
+    text = models.CharField(max_length=4096, null=True)
+    image = models.ImageField(settings.MEDIA_ROOT, null=True)
+    send_time = models.DateTimeField()
 
     def __str__(self):
         return self.text
