@@ -2,7 +2,7 @@ import telegram
 from django import forms
 from django.contrib import admin
 
-from bots.models import Bot, Channel
+from bots.models import Bot, Channel, Message
 
 
 class BotAdminForm(forms.ModelForm):
@@ -66,3 +66,10 @@ class ChannelAdmin(admin.ModelAdmin):
         obj.title = channel['title']
 
         super().save_model(request, obj, form, change)
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('text', 'channel', 'image_tag')
+    fields = ('channel', 'text', 'image', 'image_tag')
+    readonly_fields = ('image_tag',)
