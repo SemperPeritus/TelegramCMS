@@ -2,6 +2,7 @@ import telegram
 from django import forms
 from django.contrib import admin
 
+from bots import tasks
 from bots.models import Bot, Channel, Message
 
 
@@ -73,3 +74,7 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ('text', 'channel', 'image_tag', 'send_time')
     fields = ('channel', 'text', 'image', 'image_tag', 'send_time')
     readonly_fields = ('image_tag',)
+
+    def save_model(self, request, obj, form, change):
+        tasks.send_messages.apply_async(args=[obj], eta=obj.send_time)
+        super().save_model(request, obj, form, change)
