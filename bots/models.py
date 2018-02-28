@@ -1,4 +1,5 @@
 import os
+
 from django.db import models
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
@@ -32,9 +33,10 @@ class Message(models.Model):
     text = models.CharField(max_length=4096, null=True, blank=True)
     image = models.ImageField(settings.MEDIA_ROOT, null=True, blank=True)
     send_time = models.DateTimeField()
+    task_id = models.CharField(max_length=50, unique=True, null=True, default=None)
 
     def __str__(self):
-        return self.text
+        return self.text or 'None'
 
     def image_tag(self):
         if self.image:
@@ -63,6 +65,6 @@ def auto_delete_image_on_change(sender, instance, **kwargs):
         return False
 
     new_image = instance.image
-    if not old_image == new_image:
+    if old_image and not old_image == new_image:
         if os.path.isfile(old_image.path):
             os.remove(old_image.path)

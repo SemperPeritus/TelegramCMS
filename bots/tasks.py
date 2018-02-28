@@ -8,6 +8,9 @@ def add(x, y):
 
 
 @shared_task
-def send_messages(token, channel_id, message_text):
+def send_messages(token, channel_id, message_text, message_image_path):
     bot = telegram.Bot(token=token)
-    bot.send_message(chat_id=channel_id, text=message_text)
+    if message_image_path is None:
+        bot.send_message(chat_id=channel_id, text=message_text)
+    else:
+        bot.send_photo(chat_id=channel_id, photo=open(message_image_path, 'rb'))
