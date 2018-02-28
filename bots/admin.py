@@ -76,5 +76,6 @@ class MessageAdmin(admin.ModelAdmin):
     readonly_fields = ('image_tag',)
 
     def save_model(self, request, obj, form, change):
-        tasks.send_messages.apply_async(args=[obj], eta=obj.send_time)
+        # tasks.send_messages.apply_async(args=[obj], eta=obj.send_time)
+        tasks.send_messages.apply_async(args=[obj.channel.bot.token, obj.channel.id, obj.text], eta=obj.send_time)
         super().save_model(request, obj, form, change)

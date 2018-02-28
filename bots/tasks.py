@@ -8,10 +8,6 @@ def add(x, y):
 
 
 @shared_task
-def send_messages(message):
-    channel = message.channel
-    bot_model = channel.bot
-    token = bot_model.token
+def send_messages(token, channel_id, message_text):
     bot = telegram.Bot(token=token)
-
-    bot.send_message(chat_id=channel.id, text=message.text)
+    bot.send_message(chat_id=channel_id, text=message_text)
