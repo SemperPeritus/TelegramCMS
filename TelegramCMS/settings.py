@@ -126,7 +126,15 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = 'C:\\Users\\plato\\PycharmProjects\\TelegramCMS\\static\\img'
 
-
 # region Celery config
 CELERY_RESULT_BACKEND = 'django-db'
 # endregion Celery
+
+
+# region REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+# endregion
