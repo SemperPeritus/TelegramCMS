@@ -26,10 +26,12 @@ class ChannelViewSet(viewsets.ModelViewSet):
     serializer_class = ChannelSerializer
 
 
-class MessageSerializer(serializers.HyperlinkedModelSerializer):
+class MessageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, max_length=None, allow_empty_file=True, use_url=True)
+
     class Meta:
         model = Message
-        fields = ('channel', 'text', 'image', 'send_time')
+        fields = ('id', 'channel', 'text', 'image', 'send_time')
 
 
 class MessageViewSet(viewsets.ModelViewSet):
