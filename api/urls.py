@@ -4,15 +4,25 @@ from rest_framework import routers, viewsets, serializers
 from bots.models import Message, Channel, Bot
 
 
-class BotSerializer(serializers.HyperlinkedModelSerializer):
+class BotSerializerGet(serializers.ModelSerializer):
     class Meta:
         model = Bot
-        fields = ('name', 'username')
+        fields = ('id', 'name', 'username')
+
+
+class BotSerializerPost(serializers.ModelSerializer):
+    class Meta:
+        model = Bot
+        fields = ('token',)
 
 
 class BotViewSet(viewsets.ModelViewSet):
     queryset = Bot.objects.all()
-    serializer_class = BotSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create' or self.action == 'update':
+            return BotSerializerPost
+        return BotSerializerGet
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):

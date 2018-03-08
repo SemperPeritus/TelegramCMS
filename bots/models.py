@@ -12,9 +12,14 @@ class Bot(models.Model):
     name = models.CharField(max_length=64)
     username = models.CharField(max_length=32)
     token = models.CharField(max_length=45)
+    owner = models.ForeignKey('auth.User', related_name='bots', on_delete=models.CASCADE)
+    highlighted = models.TextField()
 
     def __str__(self):
         return "{0} (@{1})".format(self.name, self.username)
+
+    def save(self, *args, **kwargs):
+        super(self, *args, **kwargs)
 
 
 class Channel(models.Model):
