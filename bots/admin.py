@@ -27,17 +27,6 @@ class BotAdmin(admin.ModelAdmin):
     fields = ('token',)
     form = BotAdminForm
 
-    def save_model(self, request, obj, form, change):
-        bot = telegram.Bot(token=obj.token)
-
-        bot_info = bot.get_me()
-
-        obj.id = bot_info['id']
-        obj.name = bot_info['first_name']
-        obj.username = bot_info['username']
-
-        super().save_model(request, obj, form, change)
-
 
 class ChannelAdminForm(forms.ModelForm):
     def clean(self):

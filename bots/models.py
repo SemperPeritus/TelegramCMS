@@ -1,5 +1,7 @@
 import os
+from builtins import super
 
+import telegram
 from django.db import models
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
@@ -17,8 +19,16 @@ class Bot(models.Model):
     def __str__(self):
         return "{0} (@{1})".format(self.name, self.username)
 
-    def save(self, *args, **kwargs):
-        super(self, *args, **kwargs)
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        bot = telegram.Bot(token=self.token)
+
+        bot_info = bot.get_me()
+
+        self.id = bot_info['id']
+        self.name = bot_info['first_name']
+        self.username = bot_info['username']
+        super().save(force_insert, force_update, using, update_fields)
 
 
 class Channel(models.Model):
