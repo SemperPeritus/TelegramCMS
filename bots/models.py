@@ -20,9 +20,9 @@ class Bot(models.Model):
 class Channel(models.Model):
     id = models.BigIntegerField(primary_key=True)
     type = models.CharField(max_length=32)
-    title = models.CharField(max_length=128)
+    title = models.CharField(max_length=128, editable=False)
     username = models.CharField(max_length=32)
-    bot = models.ForeignKey(Bot, null=True, on_delete=models.SET_NULL)
+    bot = models.ForeignKey(Bot, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "{0} ({1})".format(self.title, self.username)
@@ -31,7 +31,7 @@ class Channel(models.Model):
 class Message(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     text = models.CharField(max_length=4096, null=True, blank=True)
-    image = models.ImageField(settings.MEDIA_ROOT, null=True, blank=True)
+    image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
     send_time = models.DateTimeField()
     task_id = models.CharField(max_length=50, unique=True, null=True, default=None)
 
