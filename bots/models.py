@@ -32,11 +32,12 @@ class Bot(models.Model):
 
 
 class Channel(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    channel_id = models.BigIntegerField()
     type = models.CharField(max_length=32)
     title = models.CharField(max_length=128, editable=False)
     username = models.CharField(max_length=32)
     bot = models.ForeignKey(Bot, null=True, blank=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey('auth.User', related_name='channels', on_delete=models.CASCADE)
 
     def __str__(self):
         return "{0} ({1})".format(self.title, self.username)
