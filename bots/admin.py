@@ -49,18 +49,6 @@ class ChannelAdmin(admin.ModelAdmin):
     fields = ('username', 'bot')
     form = ChannelAdminForm
 
-    def save_model(self, request, obj, form, change):
-        token = obj.bot.token
-        bot = telegram.Bot(token=token)
-
-        channel = bot.get_chat(obj.username)
-
-        obj.id = channel['id']
-        obj.type = channel['type']
-        obj.title = channel['title']
-
-        super().save_model(request, obj, form, change)
-
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):

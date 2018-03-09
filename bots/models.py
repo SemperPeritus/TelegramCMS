@@ -42,6 +42,18 @@ class Channel(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.title, self.username)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        token = self.bot.token
+        bot = telegram.Bot(token=token)
+
+        channel = bot.get_chat(self.username)
+
+        self.id = channel['id']
+        self.type = channel['type']
+        self.title = channel['title']
+
+        super().save(force_insert, force_update, using, update_fields)
+
 
 class Message(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
