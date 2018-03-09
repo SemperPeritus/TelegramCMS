@@ -10,7 +10,7 @@ from TelegramCMS import settings
 
 
 class Bot(models.Model):
-    id = models.IntegerField(primary_key=True)
+    bot_id = models.IntegerField()
     name = models.CharField(max_length=64)
     username = models.CharField(max_length=32)
     token = models.CharField(max_length=45)
@@ -19,15 +19,15 @@ class Bot(models.Model):
     def __str__(self):
         return "{0} (@{1})".format(self.name, self.username)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         bot = telegram.Bot(token=self.token)
 
         bot_info = bot.get_me()
 
-        self.id = bot_info['id']
+        self.bot_id = bot_info['id']
         self.name = bot_info['first_name']
         self.username = bot_info['username']
+
         super().save(force_insert, force_update, using, update_fields)
 
 

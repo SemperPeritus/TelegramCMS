@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 class BotSerializerGet(serializers.ModelSerializer):
     class Meta:
         model = Bot
-        fields = ('id', 'name', 'username')
+        fields = ('id', 'bot_id', 'name', 'username')
 
 
 class BotSerializerPost(serializers.ModelSerializer):
@@ -25,6 +25,11 @@ class BotSerializerPost(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Bot.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.token = validated_data.get('token', instance.token)
+        instance.save()
+        return instance
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
