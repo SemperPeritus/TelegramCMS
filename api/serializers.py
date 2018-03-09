@@ -39,7 +39,7 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Channel
-        fields = ('title', 'username', 'bot')
+        fields = ('id', 'channel_id', 'title', 'username', 'bot')
 
 
 class MessageSerializer(serializers.ModelSerializer):
