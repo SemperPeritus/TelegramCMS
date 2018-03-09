@@ -84,6 +84,7 @@ class Message(models.Model):
             old_task.revoke()
 
             self.task_id = task.id
+
         super().save(force_insert, force_update, using, update_fields)
 
 
