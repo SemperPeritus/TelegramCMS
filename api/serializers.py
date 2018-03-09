@@ -35,10 +35,17 @@ class ChannelSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     channel_title = serializers.ReadOnlyField(source='channel.title')
-    image = serializers.ImageField(write_only=True)
-    image_url = serializers.ReadOnlyField(source='image.url')
+    image = serializers.ImageField(write_only=True, required=False)
+    image_url = serializers.SerializerMethodField()
     owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Message
         fields = ('id', 'channel', 'channel_title', 'text', 'image', 'image_url', 'send_time', 'owner')
+
+    @staticmethod
+    def get_image_url(obj):
+        if obj.image:
+            return obj.image.url
+        else:
+            return None

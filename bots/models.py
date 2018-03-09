@@ -7,7 +7,6 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
-from TelegramCMS import settings
 from bots import tasks
 
 
@@ -60,7 +59,7 @@ class Channel(models.Model):
 class Message(models.Model):
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
     text = models.CharField(max_length=4096, null=True, blank=True)
-    image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
+    image = models.ImageField(upload_to='mes-img', null=True, blank=True)
     send_time = models.DateTimeField()
     task_id = models.CharField(max_length=50, unique=True, null=True, default=None)
     owner = models.ForeignKey('auth.User', related_name='messages', on_delete=models.CASCADE)
@@ -70,12 +69,12 @@ class Message(models.Model):
 
     def image_tag(self):
         if self.image:
-            return mark_safe('<img src="/static/img/{0}" width="100" />'.format(self.image))
+            return mark_safe('<img src="{0}" width="100" />'.format(self.image.url))
 
     image_tag.short_description = "Image preview"
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
         task = tasks.send_messages.apply_async(args=[self.channel.bot.token, self.channel.id, self.text or None,
                                                      None if not self.image else self.image.path],
                                                eta=self.send_time)
@@ -84,8 +83,6 @@ class Message(models.Model):
             old_task.revoke()
 
             self.task_id = task.id
-
-        super().save(force_insert, force_update, using, update_fields)
 
 
 # noinspection PyUnusedLocal
