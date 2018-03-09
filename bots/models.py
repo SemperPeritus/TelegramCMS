@@ -62,6 +62,13 @@ class Message(models.Model):
     image = models.ImageField(upload_to='mes-img', null=True, blank=True)
     send_time = models.DateTimeField()
     task_id = models.CharField(max_length=50, unique=True, null=True, default=None)
+
+    WAITING = 'WT'
+    STATUS_CHOICES = (
+        (WAITING, 'Waiting'),
+    )
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=WAITING)
+
     owner = models.ForeignKey('auth.User', related_name='messages', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -91,6 +98,8 @@ def auto_delete_image_on_delete(sender, instance, **kwargs):
     if instance.image:
         if os.path.isfile(instance.image.path):
             os.remove(instance.image.path)
+    # Task revoke. TODO: Can I catch exceptions?
+    instance.task.revoke()
 
 
 # noinspection PyUnusedLocal
