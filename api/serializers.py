@@ -23,12 +23,6 @@ class BotSerializerPost(serializers.ModelSerializer):
         model = Bot
         fields = ('token',)
 
-    def update(self, instance, validated_data):
-        instance.token = validated_data.get('token', instance.token)
-        # Saving is only for admin
-        # instance.save()
-        return instance
-
 
 class ChannelSerializer(serializers.ModelSerializer):
     channel_id = serializers.ReadOnlyField()
@@ -41,22 +35,10 @@ class ChannelSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     channel_title = serializers.ReadOnlyField(source='channel.title')
+    image = serializers.ImageField(write_only=True)
+    image_url = serializers.ReadOnlyField(source='image.url')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     class Meta:
         model = Message
-        fields = ('id', 'channel', 'channel_title', 'text', 'image', 'send_time')
-
-    def create(self, validated_data):
-        # message = Message(channel=validated_data.get('channel'),
-        #                   text=validated_data.get('text'),
-        #                   image=validated_data.get('image'),
-        #                   send_time=validated_data.get('send_time'))
-        # return message
-        return Message(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.channel = validated_data.get('channel', instance.channel)
-        instance.text = validated_data.get('text', instance.text)
-        instance.image = validated_data.get('image', instance.image)
-        instance.send_time = validated_data.get('send_time', instance.send_time)
-        return instance
+        fields = ('id', 'channel', 'channel_title', 'text', 'image', 'image_url', 'send_time', 'owner')

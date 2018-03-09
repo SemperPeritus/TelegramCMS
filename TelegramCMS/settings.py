@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_results',
     'rest_framework',
-    'bots'
+    'bots',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-MEDIA_ROOT = 'C:\\Users\\plato\\PycharmProjects\\TelegramCMS\\static\\img'
+MEDIA_ROOT = 'static/img'
 
 # region Celery config
 CELERY_RESULT_BACKEND = 'django-db'

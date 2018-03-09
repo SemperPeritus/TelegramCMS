@@ -1,9 +1,7 @@
 import telegram
-from celery.result import AsyncResult
 from django import forms
 from django.contrib import admin
 
-from bots import tasks
 from bots.models import Bot, Channel, Message
 
 # Global configs
@@ -55,13 +53,3 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ('text', 'channel', 'image_tag', 'send_time')
     fields = ('channel', 'text', 'image', 'image_tag', 'send_time')
     readonly_fields = ('image_tag',)
-
-    def save_model(self, request, obj, form, change):
-        task = tasks.send_messages.apply_async(args=[obj.channel.bot.token, obj.channel.id, obj.text or None,
-                                                     None if not obj.image else obj.image.path],
-                                               eta=obj.send_time)
-        if obj.task_id:
-            old_task = AsyncResult(obj.task_id)
-            old_task.revoke()
-        obj.task_id = task.id
-        super().save_model(request, obj, form, change)

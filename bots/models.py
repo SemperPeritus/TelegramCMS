@@ -2,11 +2,13 @@ import os
 from builtins import super
 
 import telegram
+from celery.result import AsyncResult
 from django.db import models
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
 from TelegramCMS import settings
+from bots import tasks
 
 
 class Bot(models.Model):
@@ -61,6 +63,7 @@ class Message(models.Model):
     image = models.ImageField(upload_to=settings.MEDIA_ROOT, null=True, blank=True)
     send_time = models.DateTimeField()
     task_id = models.CharField(max_length=50, unique=True, null=True, default=None)
+    owner = models.ForeignKey('auth.User', related_name='messages', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.text or 'None'
@@ -70,6 +73,18 @@ class Message(models.Model):
             return mark_safe('<img src="/static/img/{0}" width="100" />'.format(self.image))
 
     image_tag.short_description = "Image preview"
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        task = tasks.send_messages.apply_async(args=[self.channel.bot.token, self.channel.id, self.text or None,
+                                                     None if not self.image else self.image.path],
+                                               eta=self.send_time)
+        if self.task_id:
+            old_task = AsyncResult(self.task_id)
+            old_task.revoke()
+
+            self.task_id = task.id
+        super().save(force_insert, force_update, using, update_fields)
 
 
 # noinspection PyUnusedLocal
