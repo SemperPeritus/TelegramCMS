@@ -23,9 +23,6 @@ class BotSerializerPost(serializers.ModelSerializer):
         model = Bot
         fields = ('token',)
 
-    def create(self, validated_data):
-        return Bot.objects.create(**validated_data)
-
     def update(self, instance, validated_data):
         instance.token = validated_data.get('token', instance.token)
         # Saving is only for admin
