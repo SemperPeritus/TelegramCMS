@@ -29,6 +29,9 @@ class ChannelViewSet(viewsets.ModelViewSet):
     queryset = Channel.objects.all()
     serializer_class = ChannelSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()

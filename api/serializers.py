@@ -30,9 +30,9 @@ class BotSerializerPost(serializers.ModelSerializer):
         return instance
 
 
-class ChannelSerializer(serializers.HyperlinkedModelSerializer):
-    channel_id = serializers.ReadOnlyField(source='channel.channel_id')
-    title = serializers.ReadOnlyField(source='channel.title')
+class ChannelSerializer(serializers.ModelSerializer):
+    channel_id = serializers.ReadOnlyField()
+    title = serializers.ReadOnlyField()
 
     class Meta:
         model = Channel

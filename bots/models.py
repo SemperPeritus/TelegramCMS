@@ -48,7 +48,7 @@ class Channel(models.Model):
 
         channel = bot.get_chat(self.username)
 
-        self.id = channel['id']
+        self.channel_id = channel['id']
         self.type = channel['type']
         self.title = channel['title']
 
