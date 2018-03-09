@@ -75,9 +75,9 @@ class Message(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         super().save(force_insert, force_update, using, update_fields)
-        task = tasks.send_messages.apply_async(args=[self.channel.bot.token, self.channel.id, self.text or None,
-                                                     None if not self.image else self.image.path],
-                                               eta=self.send_time)
+        task = tasks.send_message.apply_async(args=[self.channel.bot.token, self.channel.channel_id, self.text or None,
+                                                    None if not self.image else self.image.path],
+                                              eta=self.send_time)
         if self.task_id:
             old_task = AsyncResult(self.task_id)
             old_task.revoke()
